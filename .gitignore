@@ -8,3 +8,6 @@ target
 .idea
 pom.xml.releaseBackup
 release.properties
+jasmine-maven-plugin.iml
+*.ipr
+*.iws

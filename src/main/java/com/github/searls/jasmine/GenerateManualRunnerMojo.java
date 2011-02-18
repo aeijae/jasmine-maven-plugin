@@ -3,6 +3,7 @@ package com.github.searls.jasmine;
 import java.io.File;
 import java.io.IOException;
 
+import com.github.searls.jasmine.util.JasminePluginFileUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -21,7 +22,7 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if(jsSrcDir.exists() && jsTestSrcDir.exists()) {
-			getLog().info("Generating runner '"+manualSpecRunnerHtmlFileName+"' in the Jasmine plugin's target directory to open in a browser to facilitate faster feedback.");
+			getLog().info("Generating runner files in the Jasmine plugin's target directory to open in a browser to facilitate faster feedback.");
 			try {
 				writeSpecRunnerToSourceSpecDirectory();
 			} catch (Exception e) {
@@ -33,17 +34,20 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
 	}
 
 	private void writeSpecRunnerToSourceSpecDirectory() throws IOException {
-		SpecRunnerHtmlGenerator htmlGenerator = new SpecRunnerHtmlGenerator(jsSrcDir,jsTestSrcDir,preloadSources, sourceEncoding);
-		String runner = htmlGenerator.generate(ReporterType.TrivialReporter, customRunnerTemplate);
-		
-		File destination = new File(jasmineTargetDir,manualSpecRunnerHtmlFileName);
-		String existingRunner = loadExistingManualRunner(destination);
-		
-		if(!StringUtils.equals(runner, existingRunner)) {
-			FileUtils.writeStringToFile(destination, runner);
-		} else {
-			getLog().info("Skipping spec runner generation, because an identical spec runner already exists.");
-		}
+		SpecRunnerHtmlGenerator htmlGenerator = new SpecRunnerHtmlGenerator(jsSrcDir, jsTestSrcDir, preloadSources, sourceEncoding);
+		for (File specFile : JasminePluginFileUtils.filesForScriptsInDirectory(jsTestSrcDir, specFilePostfix)) {
+            getLog().info("Generate runner file for " + specFile.getName());
+            String runner = htmlGenerator.generate(ReporterType.TrivialReporter, customRunnerTemplate, JasminePluginFileUtils.fileToString(specFile));
+
+            File destination = createManualRunnerFile(specFile);
+            String existingRunner = loadExistingManualRunner(destination);
+
+            if(!StringUtils.equals(runner, existingRunner)) {
+                FileUtils.writeStringToFile(destination, runner);
+            } else {
+                getLog().info("Skipping spec runner generation, because an identical spec runner already exists.");
+            }
+        }
 	}
 
 	private String loadExistingManualRunner(File destination) {

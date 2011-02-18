@@ -17,17 +17,7 @@ public class JasmineResultLoggerTest {
 
 	@InjectMocks private JasmineResultLogger resultLogger = new JasmineResultLogger();
 	@Mock private Log log;
-	
-	@Test
-	public void shouldLogHeader() {
-		JasmineResult result = new JasmineResult();
-		result.setDescription("");
-		
-		resultLogger.log(result);
-		
-		verify(log).info(JasmineResultLogger.HEADER);
-	}
-	
+
 	@Test
 	public void shouldLogEmptyResultInTrivialWay() {
 		String description = "Fake Result";

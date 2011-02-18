@@ -5,6 +5,7 @@
 	<title>Jasmine Spec Runner</title>
 	$cssDependencies$
 	$javascriptDependencies$
+	$pathVariables$
 	$sources$
 </head>
 <body>

@@ -119,9 +119,22 @@ public abstract class AbstractJasmineMojo extends AbstractMojo {
 	 * @parameter default-value="${project.build.sourceEncoding}"
 	 */
 	protected String sourceEncoding;
-	
+
+	/**
+	 * @parameter default-value="spec.js"
+	 */
+	protected String specFilePostfix;
+
 	/**
 	 * @parameter default-value="${project}"
 	 */
 	protected MavenProject mavenProject;
+
+    protected File createRunnerFile(File specFile) {
+        return new File(jasmineTargetDir, specFile.getName() + "-" + specRunnerHtmlFileName);
+    }
+    protected File createManualRunnerFile(File specFile) {
+        return new File(jasmineTargetDir, specFile.getName() + "-" + manualSpecRunnerHtmlFileName);
+    }
+
 }

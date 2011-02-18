@@ -21,7 +21,7 @@ public class JasmineResultLogger {
 	}
 
 	public void log(JasmineResult result) {
-		log.info(HEADER);
+		//log.info(HEADER);
 		
 		log.info(result.getDetails());
 
