@@ -25,7 +25,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlMeta;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.github.searls.jasmine.io.FileUtilsWrapper;
 import com.github.searls.jasmine.io.IOUtilsWrapper;
-
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class SpecRunnerHtmlGeneratorIntegrationTest {
 

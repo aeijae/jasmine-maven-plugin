@@ -78,11 +78,11 @@ public class SpecRunnerHtmlGenerator {
     private String pathVariables() {
         return String.format(
                 "<script type='text/javascript'>\n" +
-                "%s = {};\n" +
-                "%s = 'file://localhost%s/';\n" +
-                "%s = 'file://localhost%s/';\n" +
+                "%s = %s || {};\n" +
+                "%s = '%s';\n" +
+                "%s = '%s';\n" +
                 "</script>",
-                JASMINE_PLUGIN_JS_NAMESPACE, SPEC_DIR_JS_VARIABLE, specDir, SRC_DIR_JS_VARIABLE, sourceDir);
+                JASMINE_PLUGIN_JS_NAMESPACE, JASMINE_PLUGIN_JS_NAMESPACE, SPEC_DIR_JS_VARIABLE, JasminePluginFileUtils.fileToString(specDir), SRC_DIR_JS_VARIABLE, JasminePluginFileUtils.fileToString(sourceDir));
 
     }
 
