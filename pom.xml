@@ -45,16 +45,16 @@
     <connection>scm:git:https://github.com/searls/jasmine-maven-plugin.git</connection>
     <developerConnection>scm:git:https://searls@github.com/searls/jasmine-maven-plugin.git</developerConnection>
   </scm>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>jasmine-maven-plugin-snapshots</id>
-      <url>http://nexus.ovimaps.devbln.europe.nokia.com:8081/nexus/content/repositories/jasmine-maven-plugin-snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>jasmine-maven-plugin-releases</id>
-      <url>http://nexus.ovimaps.devbln.europe.nokia.com:8081/nexus/content/repositories/jasmine-maven-plugin-releases</url>
-    </repository>
-  </distributionManagement>
+  <!--<distributionManagement>-->
+    <!--<snapshotRepository>-->
+      <!--<id>jasmine-maven-plugin-snapshots</id>-->
+      <!--<url>http://nexus.ovimaps.devbln.europe.nokia.com:8081/nexus/content/repositories/jasmine-maven-plugin-snapshots</url>-->
+    <!--</snapshotRepository>-->
+    <!--<repository>-->
+      <!--<id>jasmine-maven-plugin-releases</id>-->
+      <!--<url>http://nexus.ovimaps.devbln.europe.nokia.com:8081/nexus/content/repositories/jasmine-maven-plugin-releases</url>-->
+    <!--</repository>-->
+  <!--</distributionManagement>-->
   <properties>
     <jasmine.version>1.0.1</jasmine.version>
     <powermock.version>1.4.6</powermock.version>
@@ -182,7 +182,7 @@
       <plugin>
         <groupId>com.github.searls</groupId>
         <artifactId>jasmine-maven-plugin</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.2-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
