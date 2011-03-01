@@ -24,8 +24,12 @@ public class JasmineResultLogger {
 		//log.info(HEADER);
 		
 		log.info(result.getDetails());
-
-		log.info("\nResults:\n\n"+result.getDescription()+"\n");		
+		log.info("\nResults:\n\n"+result.getDescription()+"\n");
 	}
+
+    public void logSummary() {
+        log.info(String.format("\nTOTALS:\n\n%d specs, %d failures\n",
+                JasmineResult.getTotalTests(), JasmineResult.getTotalFailures()));
+    }
 
 }

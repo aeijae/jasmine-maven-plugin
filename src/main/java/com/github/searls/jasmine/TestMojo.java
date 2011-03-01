@@ -44,13 +44,23 @@ public class TestMojo extends AbstractJasmineMojo {
                 }
             } catch (IOException e) {
                 throw new MojoFailureException("IO Exception: " + e.getMessage());
+            } catch (MojoFailureException mfe) {
+                throw mfe;
+            } finally {
+                logSummary();
             }
         } else {
 			getLog().info("Skipping Jasmine Tests");
 		}
 	}
 
-	private void logResults(JasmineResult result) {
+    private void logSummary() {
+        JasmineResultLogger resultLogger = new JasmineResultLogger();
+        resultLogger.setLog(getLog());
+        resultLogger.logSummary();
+    }
+
+    private void logResults(JasmineResult result) {
 		JasmineResultLogger resultLogger = new JasmineResultLogger();
 		resultLogger.setLog(getLog());
 		resultLogger.log(result);

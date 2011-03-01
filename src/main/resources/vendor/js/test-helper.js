@@ -11,3 +11,8 @@ function loadScript(path) {
 function loadSource(fileName) {
     loadScript(jasmine.plugin.jsSrcDir + fileName);
 }
+
+function loadSpec(fileName) {
+    loadScript(jasmine.plugin.jsTestDir + fileName);
+}
+

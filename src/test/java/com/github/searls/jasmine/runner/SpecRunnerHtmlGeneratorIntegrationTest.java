@@ -1,23 +1,5 @@
 package com.github.searls.jasmine.runner;
 
-import static com.github.searls.jasmine.runner.SpecRunnerHtmlGenerator.*;
-import static com.github.searls.jasmine.Matchers.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
-
 import com.gargoylesoftware.htmlunit.IncorrectnessListener;
 import com.gargoylesoftware.htmlunit.MockWebConnection;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -25,6 +7,26 @@ import com.gargoylesoftware.htmlunit.html.HtmlMeta;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.github.searls.jasmine.io.FileUtilsWrapper;
 import com.github.searls.jasmine.io.IOUtilsWrapper;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.io.File;
+import java.net.URI;
+
+import static com.github.searls.jasmine.Matchers.containsScriptTagWith;
+import static com.github.searls.jasmine.Matchers.containsStyleTagWith;
+import static com.github.searls.jasmine.runner.SpecRunnerHtmlGenerator.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
+
 @Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class SpecRunnerHtmlGeneratorIntegrationTest {
@@ -35,11 +37,17 @@ public class SpecRunnerHtmlGeneratorIntegrationTest {
 		LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 	}
 
-	@InjectMocks
-	private SpecRunnerHtmlGenerator specRunnerHtmlGenerator = new SpecRunnerHtmlGenerator(null, null, null, SOURCE_ENCODING);
+	private SpecRunnerHtmlGenerator specRunnerHtmlGenerator;
 
 	@Mock private FileUtilsWrapper fileUtilsWrapper;
+    @Mock private File mockDir;
 	@Spy private IOUtilsWrapper ioUtilsWrapper = new IOUtilsWrapper();
+
+    @Before
+    public void setUp() throws Exception {
+        when(mockDir.toURI()).thenReturn(new URI("file://host/path"));
+        specRunnerHtmlGenerator = new SpecRunnerHtmlGenerator(mockDir, mockDir, null, SOURCE_ENCODING);
+    }
 
 	@Test
 	public void shouldBuildBasicHtmlWhenNoDependenciesAreProvided() {
@@ -67,7 +75,7 @@ public class SpecRunnerHtmlGeneratorIntegrationTest {
 
 	@Test
 	public void shouldDefaultSourceEncodingWhenUnspecified() {
-		specRunnerHtmlGenerator = new SpecRunnerHtmlGenerator(null, null, null, "");
+		specRunnerHtmlGenerator = new SpecRunnerHtmlGenerator(mockDir, mockDir, null, "");
 
 		String html = specRunnerHtmlGenerator.generate(ReporterType.TrivialReporter, null, "");
 
@@ -122,24 +130,6 @@ public class SpecRunnerHtmlGeneratorIntegrationTest {
 		String html = specRunnerHtmlGenerator.generate(ReporterType.TrivialReporter, null, "");
 
 		assertThat(html, containsStyleTagWith(expected));
-	}
-
-	@Test
-	public void shouldNotReadDefaultTemplateWhenOneIsProvided() throws IOException {
-		File expected = mock(File.class);
-
-		specRunnerHtmlGenerator.generate(ReporterType.TrivialReporter, expected, "");
-
-		verify(ioUtilsWrapper, never()).toString(DEFAULT_RUNNER_HTML_TEMPLATE_FILE);
-	}
-
-	@Test
-	public void shouldReadCustomTemplateWhenOneIsProvided() throws IOException {
-		File expected = mock(File.class);
-
-		specRunnerHtmlGenerator.generate(ReporterType.TrivialReporter, expected, "");
-
-		verify(fileUtilsWrapper).readFileToString(expected);
 	}
 
 	private HtmlPage getPage(String html) {

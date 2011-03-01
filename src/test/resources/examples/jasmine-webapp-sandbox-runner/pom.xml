@@ -24,7 +24,7 @@
       <plugin>
         <groupId>com.github.searls</groupId>
         <artifactId>jasmine-maven-plugin</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
+        <version>1.0.2-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
@@ -62,11 +62,6 @@
     <pluginRepository>
       <id>searls-maven-snapshots</id>
       <url>http://searls-maven-repository.googlecode.com/svn/trunk/snapshots</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>jasmine-maven-plugin-releases</id>
-      <url>http://nexus.ovimaps.devbln.europe.nokia.com:8081/nexus/content/repositories/jasmine-maven-plugin-releases
-      </url>
     </pluginRepository>
   </pluginRepositories>
 </project>
