@@ -132,8 +132,16 @@ public abstract class AbstractJasmineMojo extends AbstractMojo {
 	protected MavenProject mavenProject;
 
 	protected File createRunnerFile(final File specFile) {
-		return new File(jasmineTargetDir, specFile.getName() + "-"
-		        + specRunnerHtmlFileName);
+		final String runnerName = String.format("%s%s%s-%s",
+		        specFile.getParent(), File.separator, specFile.getName(),
+		        specRunnerHtmlFileName);
+
+		final File runner = new File(runnerName);
+		final File specDir = new File(specDirectoryName);
+		final URI relPath = specDir.toURI().relativize(runner.toURI());
+
+		return new File(jasmineTargetDir, relPath.toString().replaceAll(
+		        File.separator, "_"));
 	}
 
 	protected File createManualRunnerFile(final File specFile) {
@@ -144,9 +152,9 @@ public abstract class AbstractJasmineMojo extends AbstractMojo {
 		final File runner = new File(runnerName);
 		final File specDir = new File(specDirectoryName);
 		final URI relPath = specDir.toURI().relativize(runner.toURI());
-		final URI targetPath = jasmineTargetDir.toURI().resolve(relPath);
 
-        return new File(targetPath);
-    }
+		return new File(jasmineTargetDir, relPath.toString().replaceAll(
+		        File.separator, "_"));
+	}
 
 }
