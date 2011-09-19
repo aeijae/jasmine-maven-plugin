@@ -3,7 +3,6 @@ package com.github.searls.jasmine;
 import java.io.File;
 import java.io.IOException;
 
-import com.github.searls.jasmine.util.JasminePluginFileUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -11,6 +10,7 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import com.github.searls.jasmine.runner.ReporterType;
 import com.github.searls.jasmine.runner.SpecRunnerHtmlGenerator;
+import com.github.searls.jasmine.util.JasminePluginFileUtils;
 
 
 /**
@@ -25,7 +25,7 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
 			getLog().info("Generating runner files in the Jasmine plugin's target directory to open in a browser to facilitate faster feedback.");
 			try {
 				writeSpecRunnerToSourceSpecDirectory();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new MojoFailureException(e,"JavaScript Test execution failed.","Failed to generate "+manualSpecRunnerHtmlFileName);
 			}
 		} else {
@@ -34,13 +34,19 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
 	}
 
 	private void writeSpecRunnerToSourceSpecDirectory() throws IOException {
-		SpecRunnerHtmlGenerator htmlGenerator = new SpecRunnerHtmlGenerator(jsSrcDir, jsTestSrcDir, preloadSources, sourceEncoding);
-		for (File specFile : JasminePluginFileUtils.filesForScriptsInDirectory(jsTestSrcDir, specFilePostfix)) {
-            getLog().info("Generate runner file for " + specFile.getName());
-            String runner = htmlGenerator.generate(ReporterType.TrivialReporter, customRunnerTemplate, JasminePluginFileUtils.fileToString(specFile));
+		final SpecRunnerHtmlGenerator htmlGenerator = new SpecRunnerHtmlGenerator(jsSrcDir, jsTestSrcDir, preloadSources, sourceEncoding);
 
-            File destination = createManualRunnerFile(specFile);
-            String existingRunner = loadExistingManualRunner(destination);
+		final File specDir = new File(specDirectoryName);
+
+		for (final File specFile : JasminePluginFileUtils.filesForScriptsInDirectory(jsTestSrcDir, specFilePostfix)) {
+			final String relPath = specDir.toURI().relativize(specFile.toURI())
+			        .toString();
+
+            getLog().info("Generate runner file for " + relPath);
+            final String runner = htmlGenerator.generate(ReporterType.TrivialReporter, customRunnerTemplate, JasminePluginFileUtils.fileToString(specFile));
+
+            final File destination = createManualRunnerFile(specFile);
+            final String existingRunner = loadExistingManualRunner(destination);
 
             if(!StringUtils.equals(runner, existingRunner)) {
                 FileUtils.writeStringToFile(destination, runner);
@@ -50,13 +56,13 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
         }
 	}
 
-	private String loadExistingManualRunner(File destination) {
+	private String loadExistingManualRunner(final File destination) {
 		String existingRunner = null;
 		try {
 			if(destination.exists()) {
 				existingRunner = FileUtils.readFileToString(destination);
 			}
-		} catch(Exception e) {
+		} catch(final Exception e) {
 			getLog().warn("An error occurred while trying to open an existing manual spec runner. Continuing");
 		}
 		return existingRunner;
