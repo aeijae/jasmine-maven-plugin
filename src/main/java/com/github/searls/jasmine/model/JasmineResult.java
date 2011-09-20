@@ -1,7 +1,6 @@
 package com.github.searls.jasmine.model;
 
 
-import java.awt.event.TextEvent;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,14 +17,14 @@ public class JasmineResult {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
-        Matcher matcher = TEST_COUNT_EXTRACTOR.matcher(description);
+        final Matcher matcher = TEST_COUNT_EXTRACTOR.matcher(description);
         if (matcher.matches()) {
             try {
                 totalTests += Integer.parseInt(matcher.group(1));
                 totalFailures += Integer.parseInt(matcher.group(2));
-            } catch (NumberFormatException e) {}
+            } catch (final NumberFormatException e) {}
         }
     }
 
@@ -35,12 +34,12 @@ public class JasmineResult {
 		}
 		return description.contains("0 failures");
 	}
-	
+
 	public String getDetails() {
 		return details;
 	}
 
-	public void setDetails(String details) {
+	public void setDetails(final String details) {
 		this.details = details;
 	}
 

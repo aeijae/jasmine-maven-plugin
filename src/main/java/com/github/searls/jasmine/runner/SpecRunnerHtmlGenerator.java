@@ -1,19 +1,19 @@
 package com.github.searls.jasmine.runner;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.searls.jasmine.util.JasminePluginFileUtils;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.codehaus.plexus.util.StringUtils;
 
 import com.github.searls.jasmine.io.FileUtilsWrapper;
 import com.github.searls.jasmine.io.IOUtilsWrapper;
+import com.github.searls.jasmine.util.JasminePluginFileUtils;
 
 public class SpecRunnerHtmlGenerator {
 
@@ -36,31 +36,37 @@ public class SpecRunnerHtmlGenerator {
     public static final String JASMINE_CSS = "/vendor/css/jasmine.css";
 
     public static final String JASMINE_PLUGIN_JS_NAMESPACE = "jasmine.plugin";
+    public static final String ROOT_DIR_JS_VARIABLE = JASMINE_PLUGIN_JS_NAMESPACE + ".rootDir";
     public static final String SPEC_DIR_JS_VARIABLE = JASMINE_PLUGIN_JS_NAMESPACE + ".jsTestDir";
     public static final String SRC_DIR_JS_VARIABLE = JASMINE_PLUGIN_JS_NAMESPACE + ".jsSrcDir";
 
 
-    private FileUtilsWrapper fileUtilsWrapper = new FileUtilsWrapper();
-    private IOUtilsWrapper ioUtilsWrapper = new IOUtilsWrapper();
+    private final FileUtilsWrapper fileUtilsWrapper = new FileUtilsWrapper();
+    private final IOUtilsWrapper ioUtilsWrapper = new IOUtilsWrapper();
 
-    private File sourceDir;
-    private List<String> sourcesToLoadFirst;
+    private final File sourceDir;
+    private final File jasmineTargetDir;
+    private final File specDir;
+
+    private final List<String> sourcesToLoadFirst;
     private List<String> fileNamesAlreadyWrittenAsScriptTags = null;
-    private String sourceEncoding;
-    private File specDir;
+    private final String sourceEncoding;
 
-    public SpecRunnerHtmlGenerator(File sourceDir, File specDir, List<String> sourcesToLoadFirst, String sourceEncoding) {
-        this.sourcesToLoadFirst = sourcesToLoadFirst;
+	public SpecRunnerHtmlGenerator(final File sourceDir, final File specDir,
+	        final File jasmineTargetDir, final List<String> sourcesToLoadFirst,
+	        final String sourceEncoding) {
+		this.jasmineTargetDir = jasmineTargetDir;
+		this.sourcesToLoadFirst = sourcesToLoadFirst;
         this.sourceDir = sourceDir;
         this.sourceEncoding = sourceEncoding;
         this.specDir = specDir;
     }
 
-    public String generate(ReporterType reporterType, File customRunnerTemplate, String specName) {
+    public String generate(final ReporterType reporterType, final File customRunnerTemplate, final String specName) {
         try {
             fileNamesAlreadyWrittenAsScriptTags = new ArrayList<String>();
-            String htmlTemplate = resolveHtmlTemplate(customRunnerTemplate);
-            StringTemplate template = new StringTemplate(htmlTemplate, DefaultTemplateLexer.class);
+            final String htmlTemplate = resolveHtmlTemplate(customRunnerTemplate);
+            final StringTemplate template = new StringTemplate(htmlTemplate, DefaultTemplateLexer.class);
 
             includeJavaScriptDependencies(asList(JASMINE_JS, JASMINE_HTML_JS, CONSOLE_X_JS, JSON_2_JS, LOAD_SCRIPT), template);
             includeCssDependencies(asList(JASMINE_CSS), template);
@@ -70,7 +76,7 @@ public class SpecRunnerHtmlGenerator {
             template.setAttribute(SOURCE_ENCODING, StringUtils.isNotBlank(sourceEncoding) ? sourceEncoding : DEFAULT_SOURCE_ENCODING);
 
             return template.toString();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to load file names for dependencies or scripts", e);
         }
     }
@@ -78,36 +84,40 @@ public class SpecRunnerHtmlGenerator {
     private String pathVariables() {
         return String.format(
                 "<script type='text/javascript'>\n" +
-                "%s = %s || {};\n" +
-                "%s = '%s';\n" +
-                "%s = '%s';\n" +
+	                "%s = %s || {};\n" +
+	                "%s = '%s';\n" +
+	                "%s = '%s';\n" +
+	                "%s = '%s';\n" +
                 "</script>",
-                JASMINE_PLUGIN_JS_NAMESPACE, JASMINE_PLUGIN_JS_NAMESPACE, SPEC_DIR_JS_VARIABLE, JasminePluginFileUtils.fileToString(specDir), SRC_DIR_JS_VARIABLE, JasminePluginFileUtils.fileToString(sourceDir));
+                JASMINE_PLUGIN_JS_NAMESPACE, JASMINE_PLUGIN_JS_NAMESPACE,
+                ROOT_DIR_JS_VARIABLE, JasminePluginFileUtils.fileToString(jasmineTargetDir),
+                SPEC_DIR_JS_VARIABLE, JasminePluginFileUtils.fileToString(specDir),
+                SRC_DIR_JS_VARIABLE, JasminePluginFileUtils.fileToString(sourceDir));
 
     }
 
-    private String resolveHtmlTemplate(File customRunnerTemplate) throws IOException {
+    private String resolveHtmlTemplate(final File customRunnerTemplate) throws IOException {
         return customRunnerTemplate != null ? fileUtilsWrapper.readFileToString(customRunnerTemplate) : ioUtilsWrapper.toString(DEFAULT_RUNNER_HTML_TEMPLATE_FILE);
     }
 
-    private void includeJavaScriptDependencies(List<String> dependencies, StringTemplate template) throws IOException {
-        StringBuilder js = new StringBuilder();
-        for (String jsFile : dependencies) {
+    private void includeJavaScriptDependencies(final List<String> dependencies, final StringTemplate template) throws IOException {
+        final StringBuilder js = new StringBuilder();
+        for (final String jsFile : dependencies) {
             js.append("<script type=\"text/javascript\">").append(ioUtilsWrapper.toString(jsFile)).append("</script>");
         }
         template.setAttribute(JAVASCRIPT_DEPENDENCIES_TEMPLATE_ATTR_NAME, js.toString());
     }
 
-    private void includeCssDependencies(List<String> dependencies, StringTemplate template) throws IOException {
-        StringBuilder css = new StringBuilder();
-        for (String cssFile : dependencies) {
+    private void includeCssDependencies(final List<String> dependencies, final StringTemplate template) throws IOException {
+        final StringBuilder css = new StringBuilder();
+        for (final String cssFile : dependencies) {
             css.append("<style type=\"text/css\">").append(ioUtilsWrapper.toString(cssFile)).append("</style>");
         }
         template.setAttribute(CSS_DEPENDENCIES_TEMPLATE_ATTR_NAME, css.toString());
     }
 
-    private void setJavaScriptSourcesAttribute(StringTemplate template, String specName) throws IOException {
-        StringBuilder scriptTags = new StringBuilder();
+    private void setJavaScriptSourcesAttribute(final StringTemplate template, final String specName) throws IOException {
+        final StringBuilder scriptTags = new StringBuilder();
         appendScriptTagsForFiles(scriptTags, expandSourcesToLoadFirstRelativeToSourceDir());
         appendScriptTagsForFiles(scriptTags, asList(specName));
         template.setAttribute(SOURCES_TEMPLATE_ATTR_NAME, scriptTags.toString());
@@ -116,11 +126,11 @@ public class SpecRunnerHtmlGenerator {
 
 
     private List<String> expandSourcesToLoadFirstRelativeToSourceDir() {
-        List<String> files = new ArrayList<String>();
+        final List<String> files = new ArrayList<String>();
         if (sourcesToLoadFirst != null) {
-            for (String sourceToLoadFirst : sourcesToLoadFirst) {
-                File file = new File(sourceDir, sourceToLoadFirst);
-                File specFile = new File(specDir, sourceToLoadFirst);
+            for (final String sourceToLoadFirst : sourcesToLoadFirst) {
+                final File file = new File(sourceDir, sourceToLoadFirst);
+                final File specFile = new File(specDir, sourceToLoadFirst);
                 if (file.exists()) {
                     files.add(JasminePluginFileUtils.fileToString(file));
                 } else if (specFile.exists()) {
@@ -134,8 +144,8 @@ public class SpecRunnerHtmlGenerator {
     }
 
 
-    private void appendScriptTagsForFiles(StringBuilder sb, List<String> sourceFiles) {
-        for (String sourceFile : sourceFiles) {
+    private void appendScriptTagsForFiles(final StringBuilder sb, final List<String> sourceFiles) {
+        for (final String sourceFile : sourceFiles) {
             if (!fileNamesAlreadyWrittenAsScriptTags.contains(sourceFile)) {
                 sb.append("<script type=\"text/javascript\" src=\"").append(sourceFile).append("\"></script>");
                 fileNamesAlreadyWrittenAsScriptTags.add(sourceFile);

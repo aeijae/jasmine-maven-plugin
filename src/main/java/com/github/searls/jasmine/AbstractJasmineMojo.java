@@ -2,6 +2,7 @@ package com.github.searls.jasmine;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -132,29 +133,30 @@ public abstract class AbstractJasmineMojo extends AbstractMojo {
 	protected MavenProject mavenProject;
 
 	protected File createRunnerFile(final File specFile) {
-		final String runnerName = String.format("%s%s%s-%s",
-		        specFile.getParent(), File.separator, specFile.getName(),
-		        specRunnerHtmlFileName);
-
-		final File runner = new File(runnerName);
-		final File specDir = new File(specDirectoryName);
-		final URI relPath = specDir.toURI().relativize(runner.toURI());
-
-		return new File(jasmineTargetDir, relPath.toString().replaceAll(
-		        File.separator, "_"));
+		return getNamespacedFile(specFile, specRunnerHtmlFileName);
 	}
 
 	protected File createManualRunnerFile(final File specFile) {
-		final String runnerName = String.format("%s%s%s-%s",
-		        specFile.getParent(), File.separator, specFile.getName(),
-		        manualSpecRunnerHtmlFileName);
+		return getNamespacedFile(specFile, manualSpecRunnerHtmlFileName);
+	}
 
-		final File runner = new File(runnerName);
-		final File specDir = new File(specDirectoryName);
-		final URI relPath = specDir.toURI().relativize(runner.toURI());
+	protected File getNamespacedFile(final File specFile,
+	        final String runnerHtmlFileName) {
+		final String runnerName = String.format("%s-%s", specFile.toURI()
+		        .toString(), runnerHtmlFileName);
 
-		return new File(jasmineTargetDir, relPath.toString().replaceAll(
-		        File.separator, "_"));
+		final URI runnerPath;
+
+		try {
+	        runnerPath = new URI(runnerName);
+        } catch (final URISyntaxException e) {
+	        throw new RuntimeException(e);
+        }
+
+		final URI relPath = jsTestSrcDir.toURI().relativize(runnerPath);
+		final URI targetPath = jasmineTargetDir.toURI().resolve(relPath);
+
+        return new File(targetPath);
 	}
 
 }

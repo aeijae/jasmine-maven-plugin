@@ -2,6 +2,9 @@ package com.github.searls.jasmine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,18 +37,24 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
 	}
 
 	private void writeSpecRunnerToSourceSpecDirectory() throws IOException {
-		final SpecRunnerHtmlGenerator htmlGenerator = new SpecRunnerHtmlGenerator(jsSrcDir, jsTestSrcDir, preloadSources, sourceEncoding);
+		final SpecRunnerHtmlGenerator htmlGenerator = new SpecRunnerHtmlGenerator(
+		        jsSrcDir, jsTestSrcDir, jasmineTargetDir, preloadSources,
+		        sourceEncoding);
 
-		final File specDir = new File(specDirectoryName);
+		final List<URI> paths = new LinkedList<URI>();
 
 		for (final File specFile : JasminePluginFileUtils.filesForScriptsInDirectory(jsTestSrcDir, specFilePostfix)) {
-			final String relPath = specDir.toURI().relativize(specFile.toURI())
-			        .toString();
+			final String relPath = jsTestSrcDir.toURI()
+			        .relativize(specFile.toURI()).toString();
 
             getLog().info("Generate runner file for " + relPath);
+
             final String runner = htmlGenerator.generate(ReporterType.TrivialReporter, customRunnerTemplate, JasminePluginFileUtils.fileToString(specFile));
 
             final File destination = createManualRunnerFile(specFile);
+
+            paths.add(destination.toURI());
+
             final String existingRunner = loadExistingManualRunner(destination);
 
             if(!StringUtils.equals(runner, existingRunner)) {
@@ -54,6 +63,10 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
                 getLog().info("Skipping spec runner generation, because an identical spec runner already exists.");
             }
         }
+
+		for (final URI uri : paths) {
+			getLog().info(String.format("src=%s", uri));
+		}
 	}
 
 	private String loadExistingManualRunner(final File destination) {
