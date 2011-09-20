@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Jasmine Spec Runner Index</title>
+    <style>
+        .container {
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .runner {
+            padding: 5px;
+            border: 1px solid #ddd;
+            background-color: #f2f2f7;
+            margin: 5px 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        $runners:{<div class="runner"><a href="$it.src$">$it.name$</a></div>}; separator="\n"$
+    </div>
+</body>
+</html>

@@ -23,13 +23,16 @@ import com.github.searls.jasmine.util.JasminePluginFileUtils;
  */
 public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
 
-	public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
 		if(jsSrcDir.exists() && jsTestSrcDir.exists()) {
 			getLog().info("Generating runner files in the Jasmine plugin's target directory to open in a browser to facilitate faster feedback.");
 			try {
 				writeSpecRunnerToSourceSpecDirectory();
 			} catch (final Exception e) {
-				throw new MojoFailureException(e,"JavaScript Test execution failed.","Failed to generate "+manualSpecRunnerHtmlFileName);
+				getLog().error(e.getMessage(), e);
+				throw new MojoFailureException(e,
+				        "JavaScript Test execution failed.",
+				        "Failed to generate " + manualSpecRunnerHtmlFileName);
 			}
 		} else {
 			getLog().warn("Skipping manual spec runner generation. Check to make sure that both JavaScript directories `"+jsSrcDir.getAbsolutePath()+"` and `"+jsTestSrcDir.getAbsolutePath()+"` exist.");
@@ -50,7 +53,6 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
             getLog().info("Generate runner file for " + relPath);
 
             final String runner = htmlGenerator.generate(ReporterType.TrivialReporter, customRunnerTemplate, JasminePluginFileUtils.fileToString(specFile));
-
             final File destination = createManualRunnerFile(specFile);
 
             paths.add(destination.toURI());
@@ -62,12 +64,16 @@ public class GenerateManualRunnerMojo extends AbstractJasmineMojo {
             } else {
                 getLog().info("Skipping spec runner generation, because an identical spec runner already exists.");
             }
-        }
-
-		for (final URI uri : paths) {
-			getLog().info(String.format("src=%s", uri));
 		}
+
+		generateRunnerIndex(paths);
 	}
+
+	private void generateRunnerIndex(final List<URI> paths) throws IOException {
+	    final File indexFile = new File(jasmineTargetDir, runnerIndexFileName);
+	    getLog().info("Generating runner index at " + indexFile);
+		new SpecRunnerIndexGenerator(indexFile, jasmineTargetDir).generate(paths);
+    }
 
 	private String loadExistingManualRunner(final File destination) {
 		String existingRunner = null;

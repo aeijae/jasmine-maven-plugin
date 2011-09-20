@@ -75,6 +75,11 @@ public abstract class AbstractJasmineMojo extends AbstractMojo {
 	 */
 	protected File jasmineTargetDir;
 
+	/**
+	 * @parameter default-value="index.html"
+	 */
+	protected String runnerIndexFileName;
+
 
 	/**
 	 * @parameter expression="${skipTests}"
