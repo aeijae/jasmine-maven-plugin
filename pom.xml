@@ -39,6 +39,11 @@
       <name>Matti Aijanen</name>
       <email>matti@everholt.org</email>
     </developer>
+    <developer>
+      <id>timurstrekalov</id>
+      <name>Timur Strekalov</name>
+      <email>timur.strekalov@gmail.com</email>
+    </developer>
   </developers>
   <scm>
     <url>https://github.com/aeijae/jasmine-maven-plugin</url>
