@@ -7,9 +7,9 @@
     <groupId>org.sonatype.oss</groupId>
     <version>6</version>
   </parent>
-  <groupId>com.github.searls</groupId>
+  <groupId>com.github.timurstrekalov</groupId>
   <artifactId>jasmine-maven-plugin</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>jasmine-maven-plugin</name>
@@ -17,7 +17,7 @@
     HTML files, executes Jasmine specs headlessly with HtmlUnit, and produces JUnit XML reports. This is forked version
     of Justin Searl's plugin - forked version runs each spec.js file in a separate runner to avoid collisions in tests.
   </description>
-  <url>https://github.com/aeijae/jasmine-maven-plugin</url>
+  <url>https://github.com/timurstrekalov/jasmine-maven-plugin</url>
   <licenses>
     <license>
       <distribution>repo</distribution>
@@ -39,11 +39,16 @@
       <name>Matti Aijanen</name>
       <email>matti@everholt.org</email>
     </developer>
+    <developer>
+      <id>timurstrekalov</id>
+      <name>Timur Strekalov</name>
+      <email>timur.strekalov@gmail.com</email>
+    </developer>
   </developers>
   <scm>
-    <url>https://github.com/aeijae/jasmine-maven-plugin</url>
-    <connection>scm:git:https://github.com/searls/jasmine-maven-plugin.git</connection>
-    <developerConnection>scm:git:https://searls@github.com/searls/jasmine-maven-plugin.git</developerConnection>
+    <url>https://github.com/timurstrekalov/jasmine-maven-plugin</url>
+    <connection>scm:git:https://github.com/timurstrekalov/jasmine-maven-plugin.git</connection>
+    <developerConnection>https://timurstrekalov@github.com/timurstrekalov/jasmine-maven-plugin.git</developerConnection>
   </scm>
   <!--<distributionManagement>-->
     <!--<snapshotRepository>-->
@@ -104,7 +109,7 @@
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>stringtemplate</artifactId>
-      <version>3.2.1</version>
+      <version>3.2</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -135,6 +140,13 @@
       <artifactId>powermock-api-mockito</artifactId>
       <version>${powermock.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>com.google.guava</groupId>
+    	<artifactId>guava</artifactId>
+    	<version>r09</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
     </dependency>
   </dependencies>
 
